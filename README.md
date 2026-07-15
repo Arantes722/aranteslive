@@ -1,41 +1,170 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎮 ArantesLive
 
-## Getting Started
+ArantesLive is a modern casino, streaming and community platform built with **Next.js**, **Supabase**, and **Twitch**.
 
-First, run the development server:
+The platform combines live streams, casino offers, giveaways, rewards, and community features into a single, modern experience.
+
+---
+
+## ✨ Features
+
+- 🔐 Twitch OAuth Authentication
+- 👤 User Profiles
+- 🎁 Voucher & Redeem System
+- 🏆 Points & Rewards
+- 🎉 Giveaways & Raffles
+- 🎰 Casino Offers
+- 📺 Live Stream Status
+- 👥 Community Pages
+- 📱 Fully Responsive UI
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS
+- Lucide React
+- React Icons
+
+### Backend
+
+- Supabase
+- PostgreSQL
+- Row Level Security (RLS)
+
+### APIs
+
+- Twitch API
+- Twitch OAuth
+
+---
+
+## 📂 Project Structure
+
+```text
+app/
+components/
+lib/
+services/
+public/
+styles/
+types/
+utils/
+```
+
+---
+
+## 🚀 Getting Started
+
+### Clone the repository
+
+```bash
+git clone https://github.com/arantes722/aranteslive.git
+```
+
+### Navigate to the project
+
+```bash
+cd aranteslive
+```
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Create a `.env.local` file
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+TWITCH_CLIENT_ID=your_client_id
+TWITCH_CLIENT_SECRET=your_client_secret
+TWITCH_USERNAME=your_twitch_username
+```
+
+### Start the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open your browser at:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🔥 Current Features
 
-To learn more about Next.js, take a look at the following resources:
+- Twitch Login
+- Secure Authentication
+- User Profiles
+- Reward Points
+- Voucher Redemption
+- Live Stream Status
+- Responsive Sidebar
+- Responsive Topbar
+- Community Navigation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📌 Roadmap
 
-## Deploy on Vercel
+- 💬 Live Twitch Chat
+- 🎰 Casino Reviews
+- 🏅 Loyalty Levels
+- 🛒 Rewards Shop
+- 📈 Leaderboards
+- 🎁 Daily Rewards
+- 🔔 Notifications
+- 💜 Discord Integration
+- 🛠 Admin Dashboard
+- 📅 Stream Schedule
+- 👥 Community Events
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-=======
-# aranteslive
-Premium live casino platform featuring exclusive offers, reviews, guides and community.
->>>>>>> 58cdcd42ded6529bc9af07abd78dc45f0bd01739
+## 📷 Screenshots
+
+Coming soon.
+
+---
+
+## 🤝 Contributing
+
+Contributions, suggestions, and feature requests are welcome.
+
+1. Fork the repository
+2. Create a new branch
+3. Commit your changes
+4. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 👨‍💻 Author
+
+**João Arantes**
+
+- GitHub: https://github.com/arantes722
+
+---
+
+<p align="center">
+Built with ❤️ using Next.js, Supabase & Twitch
+</p>
