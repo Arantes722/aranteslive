@@ -1,26 +1,99 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-heading);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+
+:root {
+  --background: #050505;
+  --foreground: #ffffff;
+
+  --primary: #dc2626;
+  --primary-foreground: #ffffff;
+
+  --border: rgba(255,255,255,0.08);
+  --input: rgba(255,255,255,0.1);
+  --ring: rgba(220,38,38,0.5);
+
+  --radius: 0.75rem;
 }
+
+
+* {
+  border-color: var(--border);
+}
+
+
+html {
+  font-family: var(--font-body), sans-serif;
+  background: #050505;
+  scroll-behavior: smooth;
+}
+
 
 body {
-  background: var(--background);
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(220,38,38,0.18),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(220,38,38,0.08),
+      transparent 30%
+    ),
+    #050505;
+
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), sans-serif;
+  letter-spacing: -0.03em;
+}
+
+
+::selection {
+  background: rgba(220,38,38,0.4);
+  color: white;
+}
+
+
+@layer base {
+  * {
+    @apply outline-ring/50;
+  }
+
+  body {
+    @apply text-foreground;
+  }
 }
