@@ -1,68 +1,163 @@
+import Link from "next/link";
+import { ChevronRight, Star } from "lucide-react";
+
 import { casinoOffers } from "@/constants/home";
 
 export function FeaturedOffers() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20">
+    <section className="mx-auto max-w-7xl px-6 py-12">
 
-      <div className="mb-10 flex items-end justify-between">
+      {/* Header */}
+
+      <div className="mb-8 flex items-center justify-between">
 
         <div>
-          <span className="text-sm font-medium text-red-500">
-            PARTNERS
-          </span>
 
-          <h2 className="mt-2 text-4xl font-bold">
-            Featured Casino Offers
+          <p className="text-sm font-semibold uppercase tracking-widest text-red-500">
+            Top Offers
+          </p>
+
+          <h2 className="mt-2 text-3xl font-bold">
+            Best Casino Bonuses
           </h2>
 
-          <p className="mt-3 max-w-xl text-neutral-400">
-            Discover the best casino promotions,
-            exclusive bonuses and partner offers.
-          </p>
         </div>
 
-
-        <button className="hidden rounded-lg border border-neutral-700 px-5 py-2 text-sm transition hover:bg-white/5 md:block">
+        <Link
+          href="/casinos"
+          className="
+            flex
+            items-center
+            gap-1
+            text-sm
+            text-neutral-400
+            transition
+            hover:text-red-500
+          "
+        >
           View All
-        </button>
+
+          <ChevronRight size={18} />
+        </Link>
 
       </div>
 
+      {/* Horizontal Scroll */}
 
-
-      <div className="grid gap-6 md:grid-cols-3">
+      <div
+        className="
+          flex
+          gap-5
+          overflow-x-auto
+          pb-2
+          scroll-smooth
+          snap-x
+          snap-mandatory
+          [&::-webkit-scrollbar]:hidden
+        "
+      >
 
         {casinoOffers.map((casino) => (
 
           <div
-            key={casino.name}
-            className="group relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-6 transition hover:-translate-y-1 hover:border-red-500"
+            key={casino.slug}
+            className="
+              group
+              relative
+              min-w-[290px]
+              max-w-[290px]
+              snap-start
+              overflow-hidden
+              rounded-2xl
+              border
+              border-neutral-800
+              bg-neutral-950
+              p-6
+              transition-all
+              duration-300
+              hover:-translate-y-1
+              hover:border-red-500
+              hover:shadow-[0_0_30px_rgba(239,68,68,.18)]
+            "
           >
 
-            <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent opacity-0 transition group-hover:opacity-100" />
-
+            <div
+              className="
+                absolute
+                inset-0
+                bg-gradient-to-br
+                from-red-500/10
+                to-transparent
+                opacity-0
+                transition
+                group-hover:opacity-100
+              "
+            />
 
             <div className="relative">
 
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-neutral-900 text-2xl">
-                🎰
+              <div className="flex items-center justify-between">
+
+                <div
+                  className="
+                    flex
+                    h-16
+                    w-16
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    bg-neutral-900
+                    text-3xl
+                  "
+                >
+                  🎰
+                </div>
+
+                <span
+                  className="
+                    rounded-full
+                    bg-red-500/10
+                    px-3
+                    py-1
+                    text-xs
+                    font-semibold
+                    text-red-500
+                  "
+                >
+                  {casino.badge}
+                </span>
+
               </div>
 
-
-              <h3 className="text-2xl font-bold">
+              <h3 className="mt-6 text-xl font-bold">
                 {casino.name}
               </h3>
 
+              <div className="mt-3 flex items-center gap-2">
 
-              <p className="mt-2 text-neutral-400">
-                {casino.description}
-              </p>
+                <Star
+                  size={16}
+                  className="fill-red-500 text-red-500"
+                />
 
+                <span className="font-semibold">
+                  {casino.rating}
+                </span>
 
+              </div>
 
-              <div className="mt-6 rounded-xl border border-neutral-800 bg-black/40 p-4">
+              <div
+                className="
+                  mt-6
+                  rounded-xl
+                  border
+                  border-neutral-800
+                  bg-black/40
+                  p-4
+                "
+              >
 
-                <p className="text-sm text-neutral-500">
+                <p className="text-xs uppercase tracking-wide text-neutral-500">
                   Welcome Bonus
                 </p>
 
@@ -72,12 +167,20 @@ export function FeaturedOffers() {
 
               </div>
 
-
-
-              <button className="mt-6 w-full rounded-xl bg-red-600 py-3 font-semibold transition hover:bg-red-500">
+              <button
+                className="
+                  mt-6
+                  w-full
+                  rounded-xl
+                  bg-red-600
+                  py-3
+                  font-semibold
+                  transition
+                  hover:bg-red-500
+                "
+              >
                 Claim Offer
               </button>
-
 
             </div>
 

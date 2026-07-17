@@ -6,6 +6,8 @@ export const casinoOffers = [
     slug: "royalspin",
     name: "RoyalSpin Casino",
     logo: "/casinos/royalspin.png",
+    image: "/casinos/royalspin-card.png",
+
     rating: "4.8",
     bonus: "€500 + 200 Free Spins",
     badge: "Exclusive",
@@ -37,6 +39,8 @@ export const casinoOffers = [
     slug: "luckyvault",
     name: "LuckyVault Casino",
     logo: "/casinos/luckyvault.png",
+    image: "/casinos/luckyvault-card.png",
+
     rating: "4.6",
     bonus: "100% Deposit Bonus",
     badge: "Featured",
@@ -68,6 +72,8 @@ export const casinoOffers = [
     slug: "goldenplay",
     name: "GoldenPlay Casino",
     logo: "/casinos/goldenplay.png",
+    image: "/casinos/goldenplay-card.png",
+
     rating: "4.7",
     bonus: "250 Free Spins",
     badge: "Hot Offer",

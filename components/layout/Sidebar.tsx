@@ -1,42 +1,51 @@
-import Link from "next/link";
-import { getStreamStatus } from "@/lib/twitch";
+import { SidebarNavigation } from "./SidebarNavigation";
+import { QuickAction } from "@/components/sidebar/QuickAction";
 
-import {
-  Home,
-  Dice5,
-  Radio,
-  Gift,
-  Users,
-  ShoppingBag,
-  Ticket,
-} from "lucide-react";
+import { casinoOffers } from "@/constants/home";
+import { giveaways } from "@/constants/giveaways";
 
-import { StreamStatusCard } from "@/components/sidebar/StreamStatusCard";
+type SidebarIcon =
+  | "home"
+  | "casino"
+  | "gift"
+  | "live"
+  | "community"
+  | "shop"
+  | "redeem";
 
+interface SidebarSection {
+  title: string;
+  items: {
+    title: string;
+    href: string;
+    icon: SidebarIcon;
+    count?: number;
+  }[];
+}
 
-const sections = [
-
+const sections: SidebarSection[] = [
   {
     title: "Discover",
     items: [
       {
         title: "Home",
         href: "/",
-        icon: Home,
+        icon: "home",
       },
       {
         title: "Casinos & Offers",
         href: "/casinos",
-        icon: Dice5,
+        icon: "casino",
+        count: casinoOffers.length,
       },
       {
         title: "Giveaways & Raffles",
         href: "/giveaways",
-        icon: Gift,
+        icon: "gift",
+        count: giveaways.length,
       },
     ],
   },
-
 
   {
     title: "Community",
@@ -44,16 +53,15 @@ const sections = [
       {
         title: "Live",
         href: "/live",
-        icon: Radio,
+        icon: "live",
       },
       {
         title: "Community",
         href: "/community",
-        icon: Users,
+        icon: "community",
       },
     ],
   },
-
 
   {
     title: "Rewards",
@@ -61,27 +69,19 @@ const sections = [
       {
         title: "Shop",
         href: "/shop",
-        icon: ShoppingBag,
+        icon: "shop",
       },
       {
         title: "Redeem",
         href: "/redeem",
-        icon: Ticket,
+        icon: "redeem",
       },
     ],
   },
-
 ];
 
-
-
 export async function Sidebar() {
-
-  const stream = await getStreamStatus();
-
-
   return (
-
     <aside
       className="
         fixed
@@ -100,122 +100,11 @@ export async function Sidebar() {
         lg:flex-col
       "
     >
-
-
-      {/* Navigation */}
-
-      <nav
-        className="
-          flex
-          flex-1
-          flex-col
-          justify-center
-          gap-7
-        "
-      >
-
-
-        {sections.map((section) => (
-
-          <div
-            key={section.title}
-          >
-
-
-            <p
-              className="
-                mb-3
-                px-4
-                text-xs
-                font-semibold
-                uppercase
-                tracking-widest
-                text-neutral-600
-              "
-            >
-              {section.title}
-            </p>
-
-
-
-            <div className="space-y-1">
-
-
-              {section.items.map((item) => {
-
-                const Icon = item.icon;
-
-
-                return (
-
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="
-                      group
-                      flex
-                      items-center
-                      gap-4
-                      rounded-xl
-                      px-4
-                      py-3
-                      text-neutral-400
-                      transition
-                      hover:bg-red-500/10
-                      hover:text-white
-                    "
-                  >
-
-
-                    <Icon
-                      size={20}
-                      className="
-                        transition
-                        group-hover:text-red-500
-                      "
-                    />
-
-
-                    <span className="text-sm font-medium">
-                      {item.title}
-                    </span>
-
-
-                  </Link>
-
-                );
-
-              })}
-
-
-            </div>
-
-
-          </div>
-
-        ))}
-
-
-      </nav>
-
-      {/* Stream Status */}
+      <SidebarNavigation sections={sections} />
 
       <div className="mt-auto pt-6">
-
-        <StreamStatusCard
-          live={stream.live}
-          title={stream.title}
-          game={stream.game}
-          viewers={stream.viewers}
-          thumbnail={stream.thumbnail}
-          avatar={stream.avatar}
-        />
-
+        <QuickAction />
       </div>
-
-
     </aside>
-
   );
-
 }

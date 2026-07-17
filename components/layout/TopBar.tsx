@@ -7,20 +7,17 @@ import LogoutButton from "@/components/auth/LogoutButton";
 import LoginButton from "../auth/LoginButton";
 
 
-
 export async function TopBar() {
 
 
     const supabase = await createClient();
 
 
-
     const {
-        data:{
+        data: {
             user
         }
     } = await supabase.auth.getUser();
-
 
 
     const profile = user?.user_metadata;
@@ -49,32 +46,63 @@ export async function TopBar() {
         >
 
 
-
             {/* Logo */}
 
             <Link
                 href="/"
                 className="
-                    text-3xl
-                    font-bold
-                    tracking-tight
+                    group
+                    flex
+                    flex-col
                 "
             >
 
-                Arantes
-                <span className="text-red-500">
-                    Live
-                </span>
+                <div
+                    className="
+                        flex
+                        items-center
+                        gap-2
+                        text-3xl
+                        font-bold
+                        tracking-tight
+                    "
+                >
+
+                    <span
+                        className="
+                            h-3
+                            w-3
+                            rounded-full
+                            bg-red-500
+                            shadow-[0_0_15px_rgba(239,68,68,.8)]
+                            transition
+                            group-hover:scale-125
+                        "
+                    />
 
 
-                <p className="text-xs text-neutral-500">
+                    <span>
+                        Arantes
+                        <span className="text-red-500">
+                            Live
+                        </span>
+                    </span>
+
+
+                </div>
+
+
+                <p
+                    className="
+                        text-xs
+                        text-neutral-500
+                    "
+                >
                     Casino • Community • Entertainment
                 </p>
 
 
             </Link>
-
-
 
 
 
@@ -87,10 +115,9 @@ export async function TopBar() {
                 className="
                     flex
                     items-center
-                    gap-5
+                    gap-4
                 "
             >
-
 
 
                 {/* Notifications */}
@@ -99,20 +126,34 @@ export async function TopBar() {
                     className="
                         relative
                         rounded-xl
+                        border
+                        border-neutral-800
+                        bg-neutral-950
                         p-3
                         text-neutral-400
                         transition
+                        hover:border-red-500/30
                         hover:bg-white/5
                         hover:text-white
                     "
                 >
 
-                    <Bell size={22}/>
+                    <Bell size={22} />
 
+
+                    <span
+                        className="
+                            absolute
+                            right-2
+                            top-2
+                            h-2
+                            w-2
+                            rounded-full
+                            bg-red-500
+                        "
+                    />
 
                 </button>
-
-
 
 
 
@@ -122,102 +163,95 @@ export async function TopBar() {
                     user ?
 
 
-                    (
+                        (
 
-                    <div
-                        className="
+                            <div
+                                className="
                             flex
                             items-center
                             gap-3
-                            rounded-xl
+                            rounded-2xl
                             border
                             border-neutral-800
                             bg-neutral-950
-                            px-4
+                            px-3
                             py-2
+                            transition
+                            hover:border-red-500/30
                         "
-                    >
+                            >
 
 
-                        <Link href="/profile">
+                                <Link href="/profile">
 
-                            <img
-                                src={
-                                    profile?.avatar_url ??
-                                    "/default-avatar.png"
-                                }
-                                alt="avatar"
-                                className="
+                                    <img
+                                        src={
+                                            profile?.avatar_url ??
+                                            "/default-avatar.png"
+                                        }
+                                        alt="avatar"
+                                        className="
                                     h-10
                                     w-10
-                                    rounded-full
                                     cursor-pointer
+                                    rounded-full
                                     transition
                                     hover:ring-2
                                     hover:ring-red-500
                                 "
-                            />
+                                    />
 
-                        </Link>
-
-
+                                </Link>
 
 
-
-                        <Link
-                            href="/profile"
-                            className="
+                                <Link
+                                    href="/profile"
+                                    className="
+                                hidden
                                 transition
                                 hover:text-red-500
+                                md:block
                             "
-                        >
+                                >
 
-                            <p className="font-semibold">
-
-                                {
-                                    profile?.name ??
-                                    profile?.preferred_username ??
-                                    "User"
-                                }
-
-                            </p>
+                                    <p className="font-semibold">
+                                        {
+                                            profile?.name ??
+                                            profile?.preferred_username ??
+                                            "User"
+                                        }
+                                    </p>
 
 
-                            <p className="text-xs text-neutral-500">
-                                Twitch
-                            </p>
+                                    <p className="text-xs text-neutral-500">
+                                        Twitch
+                                    </p>
+
+                                </Link>
 
 
-                        </Link>
+                                <LogoutButton />
 
 
+                            </div>
 
 
-
-                        <LogoutButton />
-
-
-                    </div>
+                        )
 
 
-                    )
-
-                    :
+                        :
 
 
-                    (
+                        (
 
-                        <LoginButton />
+                            <LoginButton />
 
-                    )
+                        )
 
                 }
 
 
-
-
             </div>
-
 
 
         </header>

@@ -1,22 +1,115 @@
+import {
+  FaDiscord,
+  FaInstagram,
+  FaTiktok,
+  FaTwitch,
+} from "react-icons/fa";
+
+const socials = [
+  {
+    name: "Twitch",
+    icon: FaTwitch,
+    description: "Watch streams live",
+    color: "text-red-500",
+    href: "#",
+  },
+  {
+    name: "Discord",
+    icon: FaDiscord,
+    description: "Join the community",
+    color: "text-red-500",
+    href: "#",
+  },
+  {
+    name: "TikTok",
+    icon: FaTiktok,
+    description: "Daily short clips",
+    color: "text-red-500",
+    href: "#",
+  },
+  {
+    name: "Instagram",
+    icon: FaInstagram,
+    description: "Behind the scenes",
+    color: "text-red-500",
+    href: "#",
+  },
+];
+
 export function CommunitySection() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-16">
+    <section className="mx-auto max-w-7xl px-6 py-12">
 
-      <div className="rounded-2xl border border-neutral-800 bg-gradient-to-r from-red-950/40 to-neutral-950 p-10 text-center">
+      <div className="mb-8">
 
-        <h2 className="text-3xl font-bold">
-          Join the Community
-        </h2>
-
-        <p className="mx-auto mt-4 max-w-xl text-neutral-400">
-          Follow ArantesLive and stay connected with streams,
-          content and exclusive updates.
+        <p className="text-sm font-semibold uppercase tracking-widest text-red-500">
+          Community
         </p>
 
+        <h2 className="mt-2 text-3xl font-bold">
+          Join ArantesLive
+        </h2>
 
-        <button className="mt-8 rounded-lg bg-red-600 px-6 py-3 font-semibold hover:bg-red-500 transition">
-          Follow Now
-        </button>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+
+        {socials.map((social) => {
+
+          const Icon = social.icon;
+
+          return (
+
+            <a
+              key={social.name}
+              href={social.href}
+              className="
+                group
+                rounded-2xl
+                border
+                border-neutral-800
+                bg-neutral-950
+                p-6
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:border-red-500
+                hover:shadow-[0_0_30px_rgba(239,68,68,.18)]
+              "
+            >
+
+              <div
+                className="
+                  flex
+                  h-14
+                  w-14
+                  items-center
+                  justify-center
+                  rounded-2xl
+                  bg-red-500/10
+                "
+              >
+
+                <Icon
+                  size={28}
+                  className={social.color}
+                />
+
+              </div>
+
+              <h3 className="mt-5 text-xl font-bold">
+                {social.name}
+              </h3>
+
+              <p className="mt-2 text-sm text-neutral-400">
+                {social.description}
+              </p>
+
+            </a>
+
+          );
+
+        })}
 
       </div>
 

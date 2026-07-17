@@ -1,24 +1,45 @@
 import { redirect } from "next/navigation";
+import { User } from "lucide-react";
+
 import { createClient } from "@/lib/supabase/server";
-import { RedeemModal } from "@/components/profile/RedeemModal";
+
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { ProfilePoints } from "@/components/profile/ProfilePoints";
+import { ProfileStats } from "@/components/profile/ProfileStats";
+import { ProfileBadges } from "@/components/profile/ProfileBadges";
+import { ProfileActivity } from "@/components/profile/ProfileActivity";
+import { ProfileConnections } from "@/components/profile/ProfileConnections";
+import { ProfileRole } from "@/components/profile/ProfileRole";
+import { ProfileActivityOverview } from "@/components/profile/ProfileActivityOverview";
+
+
 
 
 export default async function ProfilePage() {
 
+
     const supabase = await createClient();
+
+
 
 
     const {
         data: {
-            user
+            user,
         },
     } = await supabase.auth.getUser();
 
 
 
+
     if (!user) {
+
         redirect("/login");
+
     }
+
+
+
 
 
 
@@ -26,8 +47,14 @@ export default async function ProfilePage() {
     const { data: profile } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user.id)
-        .single();
+        .eq(
+            "id",
+            user.id
+        )
+        .maybeSingle();
+
+
+
 
 
 
@@ -37,15 +64,20 @@ export default async function ProfilePage() {
     const { data: userBadges } = await supabase
         .from("user_badges")
         .select(`
-          id,
-          earned_at,
-          badges (
-            name,
-            description,
-            image_url
-          )
+            id,
+            earned_at,
+            badges (
+                name,
+                description,
+                image_url
+            )
         `)
-        .eq("user_id", user.id);
+        .eq(
+            "user_id",
+            user.id
+        );
+
+
 
 
 
@@ -56,14 +88,18 @@ export default async function ProfilePage() {
     const { data: activities } = await supabase
         .from("activities")
         .select("*")
-        .eq("user_id", user.id)
+        .eq(
+            "user_id",
+            user.id
+        )
         .order(
             "created_at",
             {
-                ascending: false
+                ascending: false,
             }
         )
-        .limit(10);
+        .limit(50);
+
 
 
 
@@ -74,59 +110,183 @@ export default async function ProfilePage() {
 
     return (
 
-        <main className="mx-auto max-w-6xl px-6 py-20">
+        <main
+            className="
+                w-full
+                space-y-4
+                px-3
+                py-4
+            "
+        >
 
 
-            <div className="
-                rounded-3xl
-                border
-                border-neutral-800
-                bg-neutral-950
-                p-10
-            ">
 
 
 
-                <div className="flex items-center gap-6">
 
 
-                    <img
-                        src={
-                            profile?.avatar_url ??
-                            "/default-avatar.png"
-                        }
-                        alt="avatar"
+            {/* Page Title */}
+
+
+            <div
+                className="
+                    flex
+                    items-center
+                    gap-4
+                    px-2
+                "
+            >
+
+
+                <div
+                    className="
+                        flex
+                        h-11
+                        w-11
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-red-500/10
+                        text-red-500
+                    "
+                >
+
+                    <User size={22} />
+
+                </div>
+
+
+
+
+                <div>
+
+
+                    <h1
                         className="
-                            h-32
-                            w-32
-                            rounded-full
+                            text-3xl
+                            font-bold
                         "
+                    >
+                        Profile
+                    </h1>
+
+
+
+                    <p
+                        className="
+                            text-sm
+                            text-neutral-500
+                        "
+                    >
+                        Manage your account, rewards and progress
+                    </p>
+
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+
+
+
+
+            {/* Profile Header */}
+
+
+            <ProfileHeader
+                profile={profile}
+                user={user}
+            />
+
+
+
+
+
+
+
+
+
+            {/* Stats */}
+
+
+            <ProfileStats
+
+                following={
+                    profile?.following ?? 0
+                }
+
+                followingSince={
+                    profile?.following_since
+                }
+
+                watchtime={
+                    profile?.watchtime ?? 0
+                }
+
+                giveawaysWon={
+                    profile?.giveaways_won ?? 0
+                }
+
+            />
+
+
+
+
+
+
+
+
+
+            {/* Dashboard Cards */}
+
+
+            <div
+                className="
+                    grid
+                    gap-4
+                    xl:grid-cols-12
+                "
+            >
+
+
+
+
+
+                <div
+                    className="
+                        xl:col-span-5
+                    "
+                >
+
+                    <ProfilePoints
+                        points={
+                            profile?.points ?? 0
+                        }
                     />
 
-
-
-                    <div>
-
-
-                        <h1 className="text-4xl font-bold">
-                            {profile?.display_name}
-                        </h1>
+                </div>
 
 
 
-                        <p className="text-neutral-400">
-                            @{profile?.username}
-                        </p>
 
 
 
-                        <p className="mt-2 text-sm text-neutral-500">
-                            ID #{profile?.id.slice(0, 4)}
-                        </p>
 
+                <div
+                    className="
+                        xl:col-span-3
+                    "
+                >
 
-                    </div>
-
+                    <ProfileConnections
+                        user={user}
+                        profile={profile}
+                    />
 
                 </div>
 
@@ -136,226 +296,18 @@ export default async function ProfilePage() {
 
 
 
-                {/* Points */}
+                <div
+                    className="
+                        xl:col-span-4
+                    "
+                >
 
-
-                <div className="
-                    mt-10
-                    rounded-2xl
-                    bg-neutral-900
-                    p-6
-                ">
-
-
-                    <p className="text-neutral-500">
-                        Store Points
-                    </p>
-
-
-                    <p className="mt-2 text-4xl font-bold">
-                        {profile?.points ?? 0}
-                        <span className="text-lg text-neutral-400">
-                            {" "}pts.
-                        </span>
-                    </p>
-
-
-
-
-                    {/* Redeem Voucher */}
-
-                    <RedeemModal />
-
+                    <ProfileRole
+                        profile={profile}
+                    />
 
                 </div>
 
-
-
-
-
-
-
-
-                {/* Stats */}
-
-
-                <div className="
-                    mt-8
-                    grid
-                    gap-6
-                    md:grid-cols-3
-                ">
-
-
-                    <div className="rounded-2xl bg-neutral-900 p-6">
-
-                        <p className="text-neutral-500">
-                            Following
-                        </p>
-
-                        <p className="text-3xl font-bold">
-                            {profile?.following ?? 0}
-                        </p>
-
-                    </div>
-
-
-
-
-
-                    <div className="rounded-2xl bg-neutral-900 p-6">
-
-                        <p className="text-neutral-500">
-                            Watchtime
-                        </p>
-
-                        <p className="text-3xl font-bold">
-                            {profile?.watchtime ?? 0}h
-                        </p>
-
-                    </div>
-
-
-
-
-
-                    <div className="rounded-2xl bg-neutral-900 p-6">
-
-                        <p className="text-neutral-500">
-                            Giveaways Won
-                        </p>
-
-                        <p className="text-3xl font-bold">
-                            {profile?.giveaways_won ?? 0}
-                        </p>
-
-                    </div>
-
-
-                </div>
-
-
-
-
-
-
-
-
-                {/* Badges */}
-
-
-                <section className="mt-10">
-
-                    <h2 className="text-2xl font-bold">
-                        Badges
-                    </h2>
-
-
-                    <div className="
-                        mt-5
-                        grid
-                        gap-4
-                        md:grid-cols-4
-                    ">
-
-
-                        {userBadges?.map((item:any)=>(
-
-                            <div
-                                key={item.id}
-                                className="
-                                    rounded-2xl
-                                    border
-                                    border-neutral-800
-                                    bg-neutral-900
-                                    p-5
-                                "
-                            >
-
-                                <p className="font-bold">
-                                    {item.badges.name}
-                                </p>
-
-                                <p className="mt-2 text-sm text-neutral-400">
-                                    {item.badges.description}
-                                </p>
-
-                            </div>
-
-                        ))}
-
-
-                    </div>
-
-                </section>
-
-
-
-
-
-
-
-
-                {/* Activity */}
-
-
-                <section className="mt-10">
-
-
-                    <h2 className="text-2xl font-bold">
-                        Activity
-                    </h2>
-
-
-
-                    <div className="mt-5 space-y-4">
-
-
-                        {activities?.map((activity)=>(
-
-                            <div
-                                key={activity.id}
-                                className="
-                                    rounded-xl
-                                    border
-                                    border-neutral-800
-                                    bg-neutral-900
-                                    p-5
-                                    flex
-                                    justify-between
-                                "
-                            >
-
-                                <div>
-
-                                    <p className="font-bold">
-                                        {activity.title}
-                                    </p>
-
-
-                                    <p className="text-sm text-neutral-400">
-                                        {activity.description}
-                                    </p>
-
-                                </div>
-
-
-
-                                <span className="font-bold text-red-500">
-                                    {activity.points > 0 ? "+" : ""}
-                                    {activity.points} pts
-                                </span>
-
-
-                            </div>
-
-                        ))}
-
-
-                    </div>
-
-
-                </section>
 
 
 
@@ -363,7 +315,58 @@ export default async function ProfilePage() {
             </div>
 
 
+
+            {/* Activity Overview */}
+
+
+            <ProfileActivityOverview
+                activities={
+                    activities ?? []
+                }
+            />
+
+
+
+
+
+
+
+
+
+            {/* Badges */}
+
+
+            <ProfileBadges
+                badges={
+                    userBadges ?? []
+                }
+            />
+
+
+
+
+
+
+
+
+
+            {/* Recent Activity */}
+
+
+            <ProfileActivity
+                activities={
+                    activities ?? []
+                }
+            />
+
+
+
+
+
+
+
         </main>
 
     );
+
 }
