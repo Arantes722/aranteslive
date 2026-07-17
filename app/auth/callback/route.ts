@@ -6,100 +6,50 @@ import {
     getTwitchUser,
 } from "@/lib/twitch/api";
 
-import {
-    syncTwitchProfile
-} from "@/lib/twitch/syncProfile";
-
-
-
-
-
-
-
 export async function GET(request: Request) {
-
-
 
     const requestUrl =
         new URL(request.url);
 
-
-
     const code =
         requestUrl.searchParams.get("code");
 
-
-
-
-
-
-    if(!code){
-
+    if (!code) {
 
         return NextResponse.redirect(
-
-            new URL(
-                "/login",
-                request.url
-            )
-
+            new URL("/login", request.url)
         );
 
-
     }
-
-
-
-
-
-
-
 
     const cookieStore =
         await cookies();
 
-
-
-
-
-
-
     const supabase =
         createServerClient(
 
-
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
-
 
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 
-
             {
 
-                cookies:{
+                cookies: {
 
-
-                    getAll(){
-
+                    getAll() {
 
                         return cookieStore.getAll();
 
-
                     },
 
-
-
-                    setAll(cookiesToSet){
-
+                    setAll(cookiesToSet) {
 
                         cookiesToSet.forEach(
-
                             ({
                                 name,
                                 value,
                                 options
-                            })=>{
-
+                            }) => {
 
                                 cookieStore.set(
                                     name,
@@ -107,305 +57,136 @@ export async function GET(request: Request) {
                                     options
                                 );
 
-
                             }
-
                         );
-
 
                     }
 
-
                 }
-
 
             }
 
-
         );
-
-
-
-
-
-
-
-
 
     const {
         data,
         error
-    }
-    =
-    await supabase.auth.exchangeCodeForSession(code);
+    } =
+        await supabase.auth.exchangeCodeForSession(code);
 
-
-
-
-
-
-    if(error){
-
+    if (error) {
 
         console.error(
             "OAuth Error:",
             error
         );
 
-
-
         return NextResponse.redirect(
-
-            new URL(
-                "/login",
-                request.url
-            )
-
+            new URL("/login", request.url)
         );
 
-
     }
-
-
-
-
-
-
-
-
 
     const accessToken =
         data.session?.provider_token;
 
-
-
-
-
-
-
-    if(!accessToken){
-
+    if (!accessToken) {
 
         console.error(
             "Missing Twitch token"
         );
 
-
-
         return NextResponse.redirect(
-
-            new URL(
-                "/login",
-                request.url
-            )
-
+            new URL("/login", request.url)
         );
 
-
     }
-
-
-
-
-
-
-
-
 
     const {
-        data:{
+        data: {
             user
         }
-    }
-    =
-    await supabase.auth.getUser();
+    } =
+        await supabase.auth.getUser();
 
+    if (user) {
 
-
-
-
-
-
-
-    if(user){
-
-
-        try{
-
+        try {
 
             const twitchUser =
                 await getTwitchUser(
                     accessToken
                 );
 
-
-
-
+            const isBroadcaster =
+                twitchUser.login.toLowerCase()
+                ===
+                process.env.TWITCH_USERNAME!.toLowerCase();
 
             const {
-                error:profileError
-            }
-            =
-            await supabase
-                .from("profiles")
-                .upsert({
+                error: profileError
+            } =
+                await supabase
+                    .from("profiles")
+                    .upsert({
 
+                        id: user.id,
 
+                        username:
+                            twitchUser.login,
 
-                    id:user.id,
+                        twitch_username:
+                            twitchUser.login,
 
+                        avatar_url:
+                            twitchUser.profile_image_url,
 
+                        email:
+                            user.email ?? null,
 
-                    username:
-                        twitchUser.login,
+                        provider:
+                            "twitch",
 
+                        twitch_id:
+                            twitchUser.id,
 
+                        twitch_access_token:
+                            accessToken,
 
-                    twitch_username:
-                        twitchUser.login,
+                        twitch_role:
+                            isBroadcaster
+                                ? "Broadcaster"
+                                : "Viewer",
 
+                        twitch_is_broadcaster:
+                            isBroadcaster,
 
+                    });
 
-                    avatar_url:
-                        twitchUser.profile_image_url,
-
-
-
-                    email:
-                        user.email
-                        ??
-                        null,
-
-
-
-                    provider:
-                        "twitch",
-
-
-
-                    twitch_id:
-                        twitchUser.id,
-
-
-
-                    twitch_access_token:
-                        accessToken,
-
-
-
-                    twitch_is_broadcaster:
-                        twitchUser.login.toLowerCase()
-                        ===
-                        process.env
-                        .TWITCH_USERNAME!
-                        .toLowerCase(),
-
-
-                });
-
-
-
-
-
-
-
-            if(profileError){
-
+            if (profileError) {
 
                 throw profileError;
 
-
             }
 
-
-
-
-
-
-
-
-
-            const {
-                data:savedProfile
-            }
-            =
-            await supabase
-                .from("profiles")
-                .select("*")
-                .eq(
-                    "id",
-                    user.id
-                )
-                .single();
-
-
-
-
-
-
-
-
-            if(savedProfile){
-
-
-                await syncTwitchProfile(
-
-                    supabase,
-
-                    savedProfile
-
-                );
-
-
-                console.log(
-                    "TWITCH SYNC COMPLETED"
-                );
-
-
-            }
-
-
-
-
-
-
-
-
-        }
-        catch(error){
-
-
-            console.error(
-
-                "TWITCH PROFILE ERROR:",
-
-                error
-
+            console.log(
+                "TWITCH PROFILE CREATED"
             );
 
+        }
+        catch (error) {
+
+            console.error(
+                "TWITCH PROFILE ERROR:",
+                error
+            );
 
         }
-
-
 
     }
 
-
-
-
-
-
-
-
-
     return NextResponse.redirect(
-
-        new URL(
-            "/profile",
-            request.url
-        )
-
+        new URL("/profile", request.url)
     );
-
 
 }

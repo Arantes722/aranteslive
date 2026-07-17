@@ -32,9 +32,9 @@ import {
 
 interface LoginModalProps {
 
-    open:boolean;
+    open: boolean;
 
-    onClose:()=>void;
+    onClose: () => void;
 
 }
 
@@ -52,22 +52,22 @@ export function LoginModal({
 
     onClose,
 
-}:LoginModalProps) {
+}: LoginModalProps) {
 
 
 
-    const [mounted,setMounted] =
+    const [mounted, setMounted] =
         useState(false);
 
 
 
 
 
-    useEffect(()=>{
+    useEffect(() => {
 
         setMounted(true);
 
-    },[]);
+    }, []);
 
 
 
@@ -75,99 +75,44 @@ export function LoginModal({
 
 
 
-    async function login(){
-
+    async function login() {
 
         const supabase =
             createClient();
 
-
-
-
         const scopes = [
 
-            // Email Twitch
-            "user:read:email",
-
-
-            // Saber se o utilizador segue canais
-            "user:read:follows",
-
-
-            // Subs do canal
-            "channel:read:subscriptions",
-
-
-            // VIPs do canal
-            "channel:read:vips",
-
-
-            // Followers do canal
-            "moderator:read:followers"
-
+            // Apenas informação básica do utilizador
+            "user:read:email"
 
         ].join(" ");
-
-
-
-
-
-
 
         const {
             error
         } =
-        await supabase.auth.signInWithOAuth({
+            await supabase.auth.signInWithOAuth({
 
+                provider: "twitch",
 
-            provider:"twitch",
+                options: {
 
+                    redirectTo:
+                        `${window.location.origin}/auth/callback`,
 
-            options:{
+                    scopes,
 
+                },
 
-                redirectTo:
+            });
 
-                `${window.location.origin}/auth/callback`,
-
-
-
-                scopes,
-
-
-                queryParams:{
-
-
-                    force_verify:"true"
-
-
-                }
-
-
-            },
-
-
-        });
-
-
-
-
-
-
-
-
-        if(error){
-
+        if (error) {
 
             console.error(
                 "TWITCH LOGIN ERROR:",
                 error
             );
 
-
         }
-
-
 
     }
 
@@ -177,8 +122,7 @@ export function LoginModal({
 
 
 
-
-    if(!mounted || !open){
+    if (!mounted || !open) {
 
         return null;
 
@@ -265,7 +209,7 @@ export function LoginModal({
 
                 >
 
-                    <X size={16}/>
+                    <X size={16} />
 
                 </button>
 
@@ -373,7 +317,7 @@ export function LoginModal({
                 >
 
 
-                    <FaTwitch size={20}/>
+                    <FaTwitch size={20} />
 
 
                     CONTINUE WITH TWITCH

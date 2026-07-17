@@ -5,23 +5,12 @@ import { createClient } from "@/lib/supabase/server";
 
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfilePoints } from "@/components/profile/ProfilePoints";
-import { ProfileStats } from "@/components/profile/ProfileStats";
-import { ProfileBadges } from "@/components/profile/ProfileBadges";
-import { ProfileActivity } from "@/components/profile/ProfileActivity";
 import { ProfileConnections } from "@/components/profile/ProfileConnections";
-import { ProfileRole } from "@/components/profile/ProfileRole";
-import { ProfileActivityOverview } from "@/components/profile/ProfileActivityOverview";
-
-
-
+import { ProfileOverview } from "@/components/profile/ProfileOverview";
 
 export default async function ProfilePage() {
 
-
     const supabase = await createClient();
-
-
-
 
     const {
         data: {
@@ -29,233 +18,106 @@ export default async function ProfilePage() {
         },
     } = await supabase.auth.getUser();
 
-
-
-
     if (!user) {
 
         redirect("/login");
 
     }
 
-
-
-
-
-
-
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq(
-            "id",
-            user.id
-        )
-        .maybeSingle();
-
-
-
-
-
-
-
-
-
-    const { data: userBadges } = await supabase
-        .from("user_badges")
-        .select(`
-            id,
-            earned_at,
-            badges (
-                name,
-                description,
-                image_url
+    const { data: profile } =
+        await supabase
+            .from("profiles")
+            .select("*")
+            .eq(
+                "id",
+                user.id
             )
-        `)
-        .eq(
-            "user_id",
-            user.id
-        );
-
-
-
-
-
-
-
-
-
-    const { data: activities } = await supabase
-        .from("activities")
-        .select("*")
-        .eq(
-            "user_id",
-            user.id
-        )
-        .order(
-            "created_at",
-            {
-                ascending: false,
-            }
-        )
-        .limit(50);
-
-
-
-
-
-
-
-
+            .maybeSingle();
 
     return (
 
         <main
             className="
+                mx-auto
                 w-full
-                space-y-4
-                px-3
-                py-4
+                max-w-7xl
+                space-y-8
+                px-6
+                py-6
             "
         >
 
-
-
-
-
-
-
             {/* Page Title */}
-
 
             <div
                 className="
                     flex
                     items-center
                     gap-4
-                    px-2
                 "
             >
-
 
                 <div
                     className="
                         flex
-                        h-11
-                        w-11
+                        h-12
+                        w-12
                         items-center
                         justify-center
-                        rounded-xl
+                        rounded-2xl
                         bg-red-500/10
                         text-red-500
                     "
                 >
 
-                    <User size={22} />
+                    <User size={24} />
 
                 </div>
 
-
-
-
                 <div>
-
 
                     <h1
                         className="
-                            text-3xl
-                            font-bold
+                            text-4xl
+                            font-black
                         "
                     >
                         Profile
                     </h1>
 
-
-
                     <p
                         className="
-                            text-sm
+                            mt-1
                             text-neutral-500
                         "
                     >
-                        Manage your account, rewards and progress
+                        Manage your ArantesLive account
                     </p>
-
 
                 </div>
 
-
             </div>
 
-
-
-
-
-
-
-
-
-            {/* Profile Header */}
-
+            {/* Header */}
 
             <ProfileHeader
                 profile={profile}
                 user={user}
             />
 
-
-
-
-
-
-
-
-
-            {/* Stats */}
-
-
-            <ProfileStats
-
-                following={
-                    profile?.following ?? 0
-                }
-
-                followingSince={
-                    profile?.following_since
-                }
-
-                watchtime={
-                    profile?.watchtime ?? 0
-                }
-
-                giveawaysWon={
-                    profile?.giveaways_won ?? 0
-                }
-
+            <ProfileOverview
+                profile={profile}
             />
 
-
-
-
-
-
-
-
-
-            {/* Dashboard Cards */}
-
+            {/* Dashboard */}
 
             <div
                 className="
                     grid
-                    gap-4
+                    gap-6
                     xl:grid-cols-12
                 "
             >
-
-
-
-
 
                 <div
                     className="
@@ -271,15 +133,9 @@ export default async function ProfilePage() {
 
                 </div>
 
-
-
-
-
-
-
                 <div
                     className="
-                        xl:col-span-3
+                        xl:col-span-7
                     "
                 >
 
@@ -290,80 +146,7 @@ export default async function ProfilePage() {
 
                 </div>
 
-
-
-
-
-
-
-                <div
-                    className="
-                        xl:col-span-4
-                    "
-                >
-
-                    <ProfileRole
-                        profile={profile}
-                    />
-
-                </div>
-
-
-
-
-
             </div>
-
-
-
-            {/* Activity Overview */}
-
-
-            <ProfileActivityOverview
-                activities={
-                    activities ?? []
-                }
-            />
-
-
-
-
-
-
-
-
-
-            {/* Badges */}
-
-
-            <ProfileBadges
-                badges={
-                    userBadges ?? []
-                }
-            />
-
-
-
-
-
-
-
-
-
-            {/* Recent Activity */}
-
-
-            <ProfileActivity
-                activities={
-                    activities ?? []
-                }
-            />
-
-
-
-
-
-
 
         </main>
 

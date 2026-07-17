@@ -3,7 +3,6 @@ import { Space_Grotesk, Inter } from "next/font/google";
 
 import "./globals.css";
 
-import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
@@ -44,11 +43,6 @@ export default function RootLayout({
 
         {/* Top Bar */}
         <TopBar />
-
-        {/* Mobile Navbar */}
-        <div className="lg:hidden">
-          <Navbar />
-        </div>
 
         {/* Main Content */}
         <div className="lg:pl-72 pt-20">
