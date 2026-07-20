@@ -1,231 +1,132 @@
 import {
-    getTwitchUser,
-    getFollowStatus,
-    getSubscribers,
-    getModerators,
-    getVIPs
+  getTwitchUser,
+  getFollowerStatus,
+  getSubscribers,
+  getModerators,
+  getVIPs,
 } from "@/lib/twitch/api";
 
-export async function syncTwitchProfile(
-    supabase: any,
-    profile: any
-) {
+export async function syncTwitchProfile(supabase: any, profile: any) {
+  const token = profile.twitch_access_token;
 
-    const token =
-        profile.twitch_access_token;
+  const twitchId = profile.twitch_id;
 
-    const twitchId =
-        profile.twitch_id;
+  if (!token || !twitchId) {
+    throw new Error("Missing Twitch data");
+  }
 
-    if (!token || !twitchId) {
+  const user = await getTwitchUser(token, profile.twitch_username);
 
-        throw new Error(
-            "Missing Twitch data"
-        );
+  if (!user) {
+    throw new Error("Twitch user missing");
+  }
 
-    }
+  const broadcasterId = process.env.TWITCH_BROADCASTER_ID!;
 
-    const user =
-        await getTwitchUser(
-            token
-        );
+  let followData = {
+    isFollower: false,
+    followedAt: null,
+  };
 
-    if (!user) {
+  try {
+    followData = await getFollowerStatus(token, broadcasterId, twitchId);
+  } catch {
+    console.log("Follower check failed");
+  }
 
-        throw new Error(
-            "Twitch user missing"
-        );
+  let subscribers: any[] = [];
 
-    }
+  let moderators: any[] = [];
 
-    const broadcasterId =
-        process.env.TWITCH_BROADCASTER_ID!;
+  let vips: any[] = [];
 
-    const followData =
-        await getFollowStatus(
-            token,
-            twitchId,
-            broadcasterId
-        );
+  try {
+    subscribers = await getSubscribers(token, broadcasterId);
+  } catch {
+    console.log("Subscriber check failed");
+  }
 
-    const isFollower =
-        followData.isFollower;
+  try {
+    moderators = await getModerators(token, broadcasterId);
+  } catch {
+    console.log("Moderator check failed");
+  }
 
-    let subscribers: any[] = [];
-    let moderators: any[] = [];
-    let vips: any[] = [];
+  try {
+    vips = await getVIPs(token, broadcasterId);
+  } catch {
+    console.log("VIP check failed");
+  }
 
-    try {
+  const isFollower = followData.isFollower;
 
-        subscribers =
-            await getSubscribers(
-                token,
-                broadcasterId
-            );
+  const subscriber = subscribers.find((sub: any) => sub.user_id === twitchId);
 
-    }
-    catch {
+  const isSubscriber = !!subscriber;
 
-        console.log(
-            "Subscriber check failed"
-        );
+  const isModerator = moderators.some((mod: any) => mod.user_id === twitchId);
 
-    }
+  const isVip = vips.some((vip: any) => vip.user_id === twitchId);
 
-    try {
+  let role = "Viewer";
 
-        moderators =
-            await getModerators(
-                token,
-                broadcasterId
-            );
+  if (user.login.toLowerCase() === process.env.TWITCH_USERNAME!.toLowerCase()) {
+    role = "Broadcaster";
+  } else if (isModerator) {
+    role = "Moderator";
+  } else if (isVip) {
+    role = "VIP";
+  } else if (isSubscriber) {
+    role = "Subscriber";
+  } else if (isFollower) {
+    role = "Follower";
+  }
 
-    }
-    catch {
+  const { error } = await supabase
 
-        console.log(
-            "Moderator check failed"
-        );
+    .from("profiles")
 
-    }
+    .update({
+      twitch_username: user.login,
 
-    try {
+      username: user.login,
 
-        vips =
-            await getVIPs(
-                token,
-                broadcasterId
-            );
+      avatar_url: user.profile_image_url,
 
-    }
-    catch {
+      twitch_role: role,
 
-        console.log(
-            "VIP check failed"
-        );
+      twitch_is_follower: isFollower,
 
-    }
+      following_since: followData.followedAt,
 
-    const isSubscriber =
-        subscribers.some(
-            (sub: any) =>
-                sub.user_id === twitchId
-        );
+      twitch_is_subscriber: isSubscriber,
 
-    const subscriber =
-        subscribers.find(
-            (sub: any) =>
-                sub.user_id === twitchId
-        );
+      twitch_is_vip: isVip,
 
-    const isModerator =
-        moderators.some(
-            (mod: any) =>
-                mod.user_id === twitchId
-        );
+      twitch_is_moderator: isModerator,
 
-    const isVip =
-        vips.some(
-            (vip: any) =>
-                vip.user_id === twitchId
-        );
+      twitch_is_broadcaster: role === "Broadcaster",
 
-    let role = "Viewer";
+      twitch_subscription_tier: subscriber?.tier ?? null,
+    })
 
-    if (
-        user.login.toLowerCase() ===
-        process.env.TWITCH_USERNAME!.toLowerCase()
-    ) {
+    .eq("id", profile.id);
 
-        role = "Broadcaster";
+  if (error) {
+    throw error;
+  }
 
-    }
-    else if (isModerator) {
+  return {
+    role,
 
-        role = "Moderator";
+    follower: isFollower,
 
-    }
-    else if (isVip) {
+    followedAt: followData.followedAt,
 
-        role = "VIP";
+    subscriber: isSubscriber,
 
-    }
-    else if (isSubscriber) {
+    vip: isVip,
 
-        role = "Subscriber";
-
-    }
-    else if (isFollower) {
-
-        role = "Follower";
-
-    }
-
-    const { error } =
-        await supabase
-            .from("profiles")
-            .update({
-
-                twitch_username:
-                    user.login,
-
-                username:
-                    user.login,
-
-                avatar_url:
-                    user.profile_image_url,
-
-                twitch_role:
-                    role,
-
-                twitch_is_follower:
-                    isFollower,
-
-                following_since:
-                    followData.followedAt,
-
-                twitch_is_subscriber:
-                    isSubscriber,
-
-                twitch_is_vip:
-                    isVip,
-
-                twitch_is_moderator:
-                    isModerator,
-
-                twitch_is_broadcaster:
-                    role === "Broadcaster",
-
-                twitch_subscription_tier:
-                    subscriber?.tier ?? null
-
-            })
-            .eq(
-                "id",
-                profile.id
-            );
-
-    if (error) {
-
-        throw error;
-
-    }
-
-    return {
-
-        role,
-
-        follower: isFollower,
-
-        followedAt:
-            followData.followedAt,
-
-        subscriber: isSubscriber,
-
-        vip: isVip,
-
-        moderator: isModerator
-
-    };
-
+    moderator: isModerator,
+  };
 }
