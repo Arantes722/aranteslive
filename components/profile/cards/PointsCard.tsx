@@ -1,17 +1,18 @@
-import { Coins } from "lucide-react";
+import { Coins, RefreshCw, ShoppingBag } from "lucide-react";
 
-interface ProfilePointsProps {
+interface PointsCardProps {
     points?: number;
 }
 
-export function ProfilePoints({
+export default function PointsCard({
     points = 0,
-}: ProfilePointsProps) {
+}: PointsCardProps) {
 
     return (
 
         <section
             className="
+                relative
                 h-full
                 overflow-hidden
                 rounded-3xl
@@ -23,8 +24,7 @@ export function ProfilePoints({
 
             <div
                 className="
-                    h-2
-                    w-full
+                    h-1
                     bg-gradient-to-r
                     from-red-600
                     via-red-500
@@ -35,10 +35,10 @@ export function ProfilePoints({
             <div
                 className="
                     flex
-                    h-[calc(100%-8px)]
+                    h-[135px]
                     items-center
-                    justify-between
-                    p-7
+                    justify-center
+                    px-6
                 "
             >
 
@@ -57,13 +57,13 @@ export function ProfilePoints({
                             w-12
                             items-center
                             justify-center
-                            rounded-2xl
+                            rounded-xl
                             bg-red-500/10
                         "
                     >
 
                         <Coins
-                            size={24}
+                            size={22}
                             className="text-red-500"
                         />
 
@@ -73,9 +73,9 @@ export function ProfilePoints({
 
                         <p
                             className="
-                                text-xs
+                                text-[10px]
                                 uppercase
-                                tracking-[0.25em]
+                                tracking-[0.22em]
                                 text-neutral-500
                             "
                         >
@@ -86,14 +86,14 @@ export function ProfilePoints({
                             className="
                                 mt-2
                                 flex
-                                items-end
+                                items-center
                                 gap-2
                             "
                         >
 
                             <h2
                                 className="
-                                    text-4xl
+                                    text-2xl
                                     font-black
                                     leading-none
                                 "
@@ -101,33 +101,53 @@ export function ProfilePoints({
                                 {points.toLocaleString()}
                             </h2>
 
-                            <span
+                            <button
                                 className="
-                                    mb-1
-                                    text-base
+                                    rounded-lg
+                                    p-1.5
                                     text-neutral-500
+                                    transition
+                                    hover:bg-neutral-800
+                                    hover:text-white
                                 "
                             >
-                                pts.
-                            </span>
+                                <RefreshCw size={14} />
+                            </button>
 
                         </div>
-
-                        <p
-                            className="
-                                mt-2
-                                text-sm
-                                text-neutral-500
-                            "
-                        >
-                            Available balance
-                        </p>
 
                     </div>
 
                 </div>
 
             </div>
+
+            <button
+                className="
+                    absolute
+                    bottom-3
+                    right-3
+                    flex
+                    items-center
+                    gap-1.5
+                    rounded-lg
+                    bg-red-500/10
+                    px-3
+                    py-1.5
+                    text-xs
+                    font-medium
+                    text-red-400
+                    transition
+                    hover:bg-red-500
+                    hover:text-white
+                "
+            >
+
+                <ShoppingBag size={13} />
+
+                Shop
+
+            </button>
 
         </section>
 

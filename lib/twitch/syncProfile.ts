@@ -4,32 +4,20 @@ import {
     getSubscribers,
     getModerators,
     getVIPs
-}
-from "@/lib/twitch/api";
-
-
-
-
+} from "@/lib/twitch/api";
 
 export async function syncTwitchProfile(
-    supabase:any,
-    profile:any
-){
-
-
+    supabase: any,
+    profile: any
+) {
 
     const token =
         profile.twitch_access_token;
 
-
-
     const twitchId =
         profile.twitch_id;
 
-
-
-
-    if(!token || !twitchId){
+    if (!token || !twitchId) {
 
         throw new Error(
             "Missing Twitch data"
@@ -37,19 +25,12 @@ export async function syncTwitchProfile(
 
     }
 
-
-
-
-
     const user =
         await getTwitchUser(
             token
         );
 
-
-
-
-    if(!user){
+    if (!user) {
 
         throw new Error(
             "Twitch user missing"
@@ -57,64 +38,33 @@ export async function syncTwitchProfile(
 
     }
 
-
-
-
-
-
-
     const broadcasterId =
         process.env.TWITCH_BROADCASTER_ID!;
 
-
-
-
-
-
-
-    const isFollower =
+    const followData =
         await getFollowStatus(
-
             token,
-
             twitchId,
-
             broadcasterId
-
         );
 
+    const isFollower =
+        followData.isFollower;
 
+    let subscribers: any[] = [];
+    let moderators: any[] = [];
+    let vips: any[] = [];
 
-
-
-
-
-
-
-    let subscribers:any[] = [];
-
-    let moderators:any[] = [];
-
-    let vips:any[] = [];
-
-
-
-
-
-
-    try{
+    try {
 
         subscribers =
             await getSubscribers(
-
                 token,
-
                 broadcasterId
-
             );
 
     }
-    catch{
+    catch {
 
         console.log(
             "Subscriber check failed"
@@ -122,24 +72,16 @@ export async function syncTwitchProfile(
 
     }
 
-
-
-
-
-
-    try{
+    try {
 
         moderators =
             await getModerators(
-
                 token,
-
                 broadcasterId
-
             );
 
     }
-    catch{
+    catch {
 
         console.log(
             "Moderator check failed"
@@ -147,24 +89,16 @@ export async function syncTwitchProfile(
 
     }
 
-
-
-
-
-
-    try{
+    try {
 
         vips =
             await getVIPs(
-
                 token,
-
                 broadcasterId
-
             );
 
     }
-    catch{
+    catch {
 
         console.log(
             "VIP check failed"
@@ -172,217 +106,126 @@ export async function syncTwitchProfile(
 
     }
 
-
-
-
-
-
-
-
-
     const isSubscriber =
         subscribers.some(
-
-            (sub:any)=>
-
+            (sub: any) =>
                 sub.user_id === twitchId
-
         );
-
-
-
-
 
     const subscriber =
         subscribers.find(
-
-            (sub:any)=>
-
+            (sub: any) =>
                 sub.user_id === twitchId
-
         );
-
-
-
-
-
-
-
 
     const isModerator =
         moderators.some(
-
-            (mod:any)=>
-
+            (mod: any) =>
                 mod.user_id === twitchId
-
         );
-
-
-
-
-
-
 
     const isVip =
         vips.some(
-
-            (vip:any)=>
-
+            (vip: any) =>
                 vip.user_id === twitchId
-
         );
 
+    let role = "Viewer";
 
+    if (
+        user.login.toLowerCase() ===
+        process.env.TWITCH_USERNAME!.toLowerCase()
+    ) {
 
+        role = "Broadcaster";
 
+    }
+    else if (isModerator) {
 
+        role = "Moderator";
 
+    }
+    else if (isVip) {
 
+        role = "VIP";
 
+    }
+    else if (isSubscriber) {
 
-    let role =
-        "Viewer";
+        role = "Subscriber";
 
+    }
+    else if (isFollower) {
 
-
-
-
-    if(
-
-        user.login.toLowerCase()
-        ===
-        process.env.TWITCH_USERNAME!
-        .toLowerCase()
-
-    ){
-
-        role =
-            "Broadcaster";
+        role = "Follower";
 
     }
 
-    else if(isModerator){
+    const { error } =
+        await supabase
+            .from("profiles")
+            .update({
 
-        role =
-            "Moderator";
+                twitch_username:
+                    user.login,
 
-    }
+                username:
+                    user.login,
 
-    else if(isVip){
+                avatar_url:
+                    user.profile_image_url,
 
-        role =
-            "VIP";
+                twitch_role:
+                    role,
 
-    }
+                twitch_is_follower:
+                    isFollower,
 
-    else if(isSubscriber){
+                following_since:
+                    followData.followedAt,
 
-        role =
-            "Subscriber";
+                twitch_is_subscriber:
+                    isSubscriber,
 
-    }
+                twitch_is_vip:
+                    isVip,
 
-    else if(isFollower){
+                twitch_is_moderator:
+                    isModerator,
 
-        role =
-            "Follower";
+                twitch_is_broadcaster:
+                    role === "Broadcaster",
 
-    }
+                twitch_subscription_tier:
+                    subscriber?.tier ?? null
 
+            })
+            .eq(
+                "id",
+                profile.id
+            );
 
-
-
-
-
-
-
-
-    const {
-        error
-    } =
-    await supabase
-        .from("profiles")
-        .update({
-
-            twitch_username:
-                user.login,
-
-
-            username:
-                user.login,
-
-
-            avatar_url:
-                user.profile_image_url,
-
-
-            twitch_role:
-                role,
-
-
-            twitch_is_follower:
-                isFollower,
-
-
-            twitch_is_subscriber:
-                isSubscriber,
-
-
-            twitch_is_vip:
-                isVip,
-
-
-            twitch_is_moderator:
-                isModerator,
-
-
-            twitch_is_broadcaster:
-                role === "Broadcaster",
-
-
-            twitch_subscription_tier:
-                subscriber?.tier ?? null
-
-
-        })
-        .eq(
-            "id",
-            profile.id
-        );
-
-
-
-
-
-
-
-    if(error){
+    if (error) {
 
         throw error;
 
     }
 
-
-
-
-
-
-
-
     return {
 
         role,
 
-        follower:isFollower,
+        follower: isFollower,
 
-        subscriber:isSubscriber,
+        followedAt:
+            followData.followedAt,
 
-        vip:isVip,
+        subscriber: isSubscriber,
 
-        moderator:isModerator
+        vip: isVip,
+
+        moderator: isModerator
 
     };
-
 
 }

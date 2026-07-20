@@ -1,149 +1,61 @@
-import {
-    Radio,
-    Crown,
-    Shield,
-    Star,
-    Lock,
-} from "lucide-react";
-
-
+import { Radio, Lock } from "lucide-react";
 
 interface ProfileHeaderProps {
-
     profile?: any;
     user?: any;
-
 }
-
-
-
-
-
-
 
 export function ProfileHeader({
     profile,
     user,
 }: ProfileHeaderProps) {
 
-
-
-
     const username =
-        profile?.username
-        ??
-        "unknown";
-
-
+        profile?.username ?? "unknown";
 
     const avatar =
-        profile?.avatar_url
-        ??
+        profile?.avatar_url ??
         "/default-avatar.png";
-
-
-
-
 
     const id =
         user?.id
-        ?
-        user.id.slice(0,4)
-        :
-        "0000";
-
-
-
-
-
-
-
-    /*
-        Twitch data
-    */
-
-
-    const twitchRole =
-        profile?.twitch_role
-        ??
-        "Viewer";
-
-
-
-    const subscriptionTier =
-        profile?.twitch_subscription_tier
-        ??
-        null;
-
-
-
-    const isVip =
-        profile?.twitch_is_vip
-        ??
-        false;
-
-
-
-    const isModerator =
-        profile?.twitch_is_moderator
-        ??
-        false;
-
-
-
-    const isBroadcaster =
-        profile?.twitch_is_broadcaster
-        ??
-        false;
-
-
-
-    const isFollower =
-        profile?.twitch_is_follower
-        ??
-        false;
-
-
-
-
-
-
-
+            ? user.id.slice(0, 4)
+            : "0000";
 
     return (
 
         <section
             className="
+                overflow-hidden
+                rounded-3xl
                 border
                 border-neutral-800
                 bg-[#080808]
-                rounded-3xl
-                p-8
             "
         >
 
-
-
+            <div
+                className="
+                    h-2
+                    w-full
+                    bg-gradient-to-r
+                    from-red-600
+                    via-red-500
+                    to-red-400
+                "
+            />
 
             <div
                 className="
                     flex
                     flex-col
                     gap-8
+                    p-8
                     lg:flex-row
                     lg:items-center
                     lg:justify-between
                 "
             >
-
-
-
-
-
-
-
-                {/* USER */}
-
 
                 <div
                     className="
@@ -153,49 +65,29 @@ export function ProfileHeader({
                     "
                 >
 
-
-
-
-
                     <img
                         src={avatar}
                         alt="Avatar"
                         className="
-                            h-28
-                            w-28
+                            h-32
+                            w-32
                             rounded-full
-                            object-cover
                             border
                             border-neutral-700
+                            object-cover
                         "
                     />
 
-
-
-
-
-
-
                     <div>
-
-
-
 
                         <h1
                             className="
                                 text-4xl
-                                font-bold
+                                font-black
                             "
                         >
-
                             {username}
-
                         </h1>
-
-
-
-
-
 
                         <div
                             className="
@@ -207,362 +99,42 @@ export function ProfileHeader({
                             "
                         >
 
-
-                            <span>
-                                @{username}
-                            </span>
-
-
+                            <span>@{username}</span>
 
                             <Lock
-                                size={13}
+                                size={14}
                                 className="text-neutral-600"
                             />
 
-
                         </div>
-
-
-
-
-
-
-
-
 
                         <div
                             className="
                                 mt-5
-                                flex
-                                flex-wrap
+                                inline-flex
+                                items-center
                                 gap-2
+                                rounded-full
+                                border
+                                border-purple-500/20
+                                bg-purple-500/10
+                                px-4
+                                py-2
+                                text-sm
+                                font-medium
+                                text-purple-400
                             "
                         >
 
+                            <Radio size={16} />
 
-
-
-
-
-                            {/* TWITCH CONNECTED */}
-
-
-                            <div
-                                className="
-                                    flex
-                                    items-center
-                                    gap-2
-                                    rounded-full
-                                    border
-                                    border-purple-500/30
-                                    bg-purple-500/10
-                                    px-3
-                                    py-1
-                                    text-xs
-                                    font-semibold
-                                    text-purple-400
-                                "
-                            >
-
-                                <Radio size={14}/>
-
-
-                                Twitch Connected
-
-
-                            </div>
-
-
-
-
-
-
-
-
-
-                            {/* VIEWER */}
-
-
-                            {
-                                twitchRole === "Viewer" && (
-
-
-                                    <div
-                                        className="
-                                            rounded-full
-                                            border
-                                            border-neutral-700
-                                            bg-neutral-900
-                                            px-3
-                                            py-1
-                                            text-xs
-                                            font-semibold
-                                            text-neutral-400
-                                        "
-                                    >
-
-                                        Viewer
-
-                                    </div>
-
-
-                                )
-                            }
-
-
-
-
-
-
-
-
-
-                            {/* FOLLOWER */}
-
-
-                            {
-                                isFollower && (
-
-
-                                    <div
-                                        className="
-                                            rounded-full
-                                            border
-                                            border-blue-500/30
-                                            bg-blue-500/10
-                                            px-3
-                                            py-1
-                                            text-xs
-                                            font-semibold
-                                            text-blue-400
-                                        "
-                                    >
-
-                                        Follower
-
-                                    </div>
-
-
-                                )
-                            }
-
-
-
-
-
-
-
-
-
-                            {/* SUBSCRIBER */}
-
-
-
-                            {
-                                subscriptionTier && (
-
-
-                                    <div
-                                        className="
-                                            flex
-                                            items-center
-                                            gap-2
-                                            rounded-full
-                                            border
-                                            border-yellow-500/30
-                                            bg-yellow-500/10
-                                            px-3
-                                            py-1
-                                            text-xs
-                                            font-semibold
-                                            text-yellow-400
-                                        "
-                                    >
-
-
-                                        <Crown size={14}/>
-
-
-                                        Subscriber
-
-
-                                        {" Tier "}
-
-
-                                        {subscriptionTier}
-
-
-                                    </div>
-
-
-                                )
-                            }
-
-
-
-
-
-
-
-
-
-                            {/* VIP */}
-
-
-                            {
-                                isVip && (
-
-
-                                    <div
-                                        className="
-                                            flex
-                                            items-center
-                                            gap-2
-                                            rounded-full
-                                            border
-                                            border-pink-500/30
-                                            bg-pink-500/10
-                                            px-3
-                                            py-1
-                                            text-xs
-                                            font-semibold
-                                            text-pink-400
-                                        "
-                                    >
-
-
-                                        <Star size={14}/>
-
-
-                                        VIP
-
-
-                                    </div>
-
-
-                                )
-                            }
-
-
-
-
-
-
-
-
-
-                            {/* MODERATOR */}
-
-
-
-                            {
-                                isModerator && (
-
-
-                                    <div
-                                        className="
-                                            flex
-                                            items-center
-                                            gap-2
-                                            rounded-full
-                                            border
-                                            border-green-500/30
-                                            bg-green-500/10
-                                            px-3
-                                            py-1
-                                            text-xs
-                                            font-semibold
-                                            text-green-400
-                                        "
-                                    >
-
-
-                                        <Shield size={14}/>
-
-
-                                        Moderator
-
-
-                                    </div>
-
-
-                                )
-                            }
-
-
-
-
-
-
-
-
-
-                            {/* BROADCASTER */}
-
-
-
-                            {
-                                isBroadcaster && (
-
-
-                                    <div
-                                        className="
-                                            flex
-                                            items-center
-                                            gap-2
-                                            rounded-full
-                                            border
-                                            border-red-500/30
-                                            bg-red-500/10
-                                            px-3
-                                            py-1
-                                            text-xs
-                                            font-semibold
-                                            text-red-400
-                                        "
-                                    >
-
-
-                                        <Star size={14}/>
-
-
-                                        Broadcaster
-
-
-                                    </div>
-
-
-                                )
-                            }
-
-
-
+                            Connected with Twitch
 
                         </div>
 
-
-
-
-
                     </div>
 
-
-
-
-
                 </div>
-
-
-
-
-
-
-
-
-
-                {/* USER ID */}
-
-
 
                 <div
                     className="
@@ -570,28 +142,23 @@ export function ProfileHeader({
                         border
                         border-neutral-800
                         bg-neutral-900
-                        px-8
-                        py-5
+                        px-5
+                        py-4
+                        text-center
+                        min-w-[140px]
                     "
                 >
-
-
 
                     <p
                         className="
                             text-xs
                             uppercase
-                            tracking-wider
+                            tracking-[0.2em]
                             text-neutral-500
                         "
                     >
-
                         User ID
-
                     </p>
-
-
-
 
                     <p
                         className="
@@ -600,26 +167,16 @@ export function ProfileHeader({
                             font-bold
                         "
                     >
-
                         #{id}
-
                     </p>
-
-
 
                 </div>
 
-
-
-
-
             </div>
-
-
-
 
         </section>
 
     );
 
 }
+

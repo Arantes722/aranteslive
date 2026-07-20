@@ -4,9 +4,13 @@ import { User } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { ProfilePoints } from "@/components/profile/ProfilePoints";
-import { ProfileConnections } from "@/components/profile/ProfileConnections";
-import { ProfileOverview } from "@/components/profile/ProfileOverview";
+
+import PointsCard from "@/components/profile/cards/PointsCard";
+import FollowingCard from "@/components/profile/cards/FollowingCard";
+import WatchtimeCard from "@/components/profile/cards/WatchtimeCard";
+import ConnectionCard from "@/components/profile/cards/ConnectionsCard";
+
+import ActivityCard from "@/components/profile/activity/ActivityCard";
 
 export default async function ProfilePage() {
 
@@ -28,11 +32,21 @@ export default async function ProfilePage() {
         await supabase
             .from("profiles")
             .select("*")
-            .eq(
-                "id",
-                user.id
-            )
+            .eq("id", user.id)
             .maybeSingle();
+
+    const { data: activities } =
+        await supabase
+            .from("activities")
+            .select("*")
+            .eq("user_id", user.id)
+            .order(
+                "created_at",
+                {
+                    ascending: false,
+                }
+            )
+            .limit(10);
 
     return (
 
@@ -47,7 +61,7 @@ export default async function ProfilePage() {
             "
         >
 
-            {/* Page Title */}
+            {/* Title */}
 
             <div
                 className="
@@ -105,48 +119,41 @@ export default async function ProfilePage() {
                 user={user}
             />
 
-            <ProfileOverview
-                profile={profile}
-            />
-
-            {/* Dashboard */}
+            {/* Cards */}
 
             <div
                 className="
                     grid
                     gap-6
-                    xl:grid-cols-12
+                    grid-cols-1
+                    md:grid-cols-2
+                    xl:grid-cols-4
                 "
             >
 
-                <div
-                    className="
-                        xl:col-span-5
-                    "
-                >
+                <PointsCard
+                    points={profile?.points ?? 0}
+                />
 
-                    <ProfilePoints
-                        points={
-                            profile?.points ?? 0
-                        }
-                    />
+                <FollowingCard
+                    followingSince={profile?.following_since}
+                />
 
-                </div>
+                <WatchtimeCard
+                    minutes={profile?.watchtime_minutes ?? 0}
+                />
 
-                <div
-                    className="
-                        xl:col-span-7
-                    "
-                >
-
-                    <ProfileConnections
-                        user={user}
-                        profile={profile}
-                    />
-
-                </div>
+                <ConnectionCard
+                    username={profile?.username}
+                />
 
             </div>
+
+            {/* Activity */}
+
+            <ActivityCard
+                activities={activities ?? []}
+            />
 
         </main>
 

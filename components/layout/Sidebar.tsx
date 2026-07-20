@@ -10,8 +10,7 @@ type SidebarIcon =
   | "gift"
   | "live"
   | "community"
-  | "shop"
-  | "redeem";
+  | "shop";
 
 interface SidebarSection {
   title: string;
@@ -47,6 +46,7 @@ const sections: SidebarSection[] = [
     ],
   },
 
+
   {
     title: "Community",
     items: [
@@ -63,22 +63,19 @@ const sections: SidebarSection[] = [
     ],
   },
 
+
   {
     title: "Rewards",
     items: [
       {
-        title: "Shop",
-        href: "/shop",
+        title: "Store",
+        href: "/store",
         icon: "shop",
-      },
-      {
-        title: "Redeem",
-        href: "/redeem",
-        icon: "redeem",
       },
     ],
   },
 ];
+
 
 export async function Sidebar() {
   return (
@@ -100,11 +97,13 @@ export async function Sidebar() {
         lg:flex-col
       "
     >
+
       <SidebarNavigation sections={sections} />
 
       <div className="mt-auto pt-6">
         <QuickAction />
       </div>
+
     </aside>
   );
 }

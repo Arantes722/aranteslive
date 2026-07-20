@@ -1,3 +1,5 @@
+import { createClient } from "@/lib/supabase/server";
+
 import { Hero } from "@/components/home/Hero";
 import { HomeSection } from "@/components/home/HomeSection";
 
@@ -5,6 +7,7 @@ import { OfferCard } from "@/components/cards/OfferCard";
 import { ClipCard } from "@/components/cards/ClipCard";
 import { GiveawayCard } from "@/components/cards/GiveawayCard";
 import { SocialCard } from "@/components/cards/SocialCard";
+import { StorePreviewCard } from "@/components/cards/StorePreviewCard";
 
 import {
   casinoOffers,
@@ -15,11 +18,27 @@ import { giveaways } from "@/constants/giveaways";
 import { socials } from "../constants/socials";
 
 
-export default function Home() {
+export default async function Home() {
+
+  const supabase = await createClient();
+
+
+  const { data: storeItems } =
+    await supabase
+      .from("store_items")
+      .select("*")
+      .eq("active", true)
+      .order("price")
+      .limit(4);
+
+
+
   return (
     <main className="space-y-8">
 
+
       <Hero />
+
 
 
       <HomeSection
@@ -42,6 +61,8 @@ export default function Home() {
 
 
 
+
+
       <HomeSection
         title="Latest Clips"
         href="/clips"
@@ -55,6 +76,8 @@ export default function Home() {
         ))}
 
       </HomeSection>
+
+
 
 
 
@@ -74,6 +97,26 @@ export default function Home() {
 
 
 
+
+
+      <HomeSection
+        title="Rewards Store"
+        href="/store"
+      >
+
+        {(storeItems ?? []).map((item) => (
+          <StorePreviewCard
+            key={item.id}
+            item={item}
+          />
+        ))}
+
+      </HomeSection>
+
+
+
+
+
       <HomeSection
         title="Community"
         href="/community"
@@ -87,6 +130,7 @@ export default function Home() {
         ))}
 
       </HomeSection>
+
 
 
     </main>

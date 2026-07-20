@@ -1,4 +1,7 @@
-import { CalendarDays, ShieldCheck } from "lucide-react";
+import {
+    CalendarHeart,
+    Clock3,
+} from "lucide-react";
 
 interface ProfileOverviewProps {
     profile: any;
@@ -8,84 +11,129 @@ export function ProfileOverview({
     profile,
 }: ProfileOverviewProps) {
 
-    const memberSince =
-        profile?.created_at
-            ? new Date(profile.created_at).toLocaleDateString(
+    const followingDate =
+        profile?.following_since
+            ? new Date(profile.following_since)
+            : null;
+
+    const followingSince =
+        followingDate
+            ? followingDate.toLocaleDateString(
                   "en-GB",
                   {
                       day: "2-digit",
-                      month: "long",
+                      month: "short",
                       year: "numeric",
                   }
               )
-            : "Unknown";
+            : "Not following";
 
-    const role =
-        profile?.twitch_role ?? "Viewer";
+    const watchtimeMinutes =
+        profile?.watchtime_minutes ?? 0;
+
+    const hours =
+        Math.floor(
+            watchtimeMinutes / 60
+        );
+
+    const minutes =
+        watchtimeMinutes % 60;
 
     return (
 
         <div
             className="
                 grid
+                h-full
+                grid-cols-2
                 gap-6
-                lg:grid-cols-2
             "
         >
 
+            {/* Following Since */}
+
             <section
                 className="
+                    h-full
+                    overflow-hidden
                     rounded-3xl
                     border
                     border-neutral-800
                     bg-[#080808]
-                    p-6
                 "
             >
 
-                <div className="flex items-center gap-4">
+                <div
+                    className="
+                        h-1
+                        w-full
+                        bg-gradient-to-r
+                        from-red-500
+                        to-pink-500
+                    "
+                />
+
+                <div
+                    className="
+                        flex
+                        h-[135px]
+                        items-center
+                        p-5
+                    "
+                >
 
                     <div
                         className="
                             flex
-                            h-12
-                            w-12
                             items-center
-                            justify-center
-                            rounded-2xl
-                            bg-red-500/10
+                            gap-3
                         "
                     >
 
-                        <CalendarDays
-                            size={22}
-                            className="text-red-500"
-                        />
-
-                    </div>
-
-                    <div>
-
-                        <p
+                        <div
                             className="
-                                text-sm
-                                uppercase
-                                tracking-wider
-                                text-neutral-500
+                                flex
+                                h-10
+                                w-10
+                                items-center
+                                justify-center
+                                rounded-xl
+                                bg-red-500/10
                             "
                         >
-                            Member Since
-                        </p>
 
-                        <h3
-                            className="
-                                mt-1
-                                text-xl
-                                font-bold
-                            "
-                        >
-                            {memberSince}
-                        </h3>
+                            <CalendarHeart
+                                size={18}
+                                className="text-red-500"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <p
+                                className="
+                                    text-[9px]
+                                    uppercase
+                                    tracking-[0.20em]
+                                    text-neutral-500
+                                "
+                            >
+                                Following Since
+                            </p>
+
+                            <h2
+                                className="
+                                    mt-1
+                                    text-xl
+                                    font-bold
+                                    leading-none
+                                "
+                            >
+                                {followingSince}
+                            </h2>
+
+                        </div>
 
                     </div>
 
@@ -93,59 +141,90 @@ export function ProfileOverview({
 
             </section>
 
+            {/* Watchtime */}
+
             <section
                 className="
+                    h-full
+                    overflow-hidden
                     rounded-3xl
                     border
                     border-neutral-800
                     bg-[#080808]
-                    p-6
                 "
             >
 
-                <div className="flex items-center gap-4">
+                <div
+                    className="
+                        h-1
+                        w-full
+                        bg-gradient-to-r
+                        from-cyan-500
+                        to-blue-500
+                    "
+                />
+
+                <div
+                    className="
+                        flex
+                        h-[135px]
+                        items-center
+                        p-5
+                    "
+                >
 
                     <div
                         className="
                             flex
-                            h-12
-                            w-12
                             items-center
-                            justify-center
-                            rounded-2xl
-                            bg-purple-500/10
+                            gap-3
                         "
                     >
 
-                        <ShieldCheck
-                            size={22}
-                            className="text-purple-400"
-                        />
-
-                    </div>
-
-                    <div>
-
-                        <p
+                        <div
                             className="
-                                text-sm
-                                uppercase
-                                tracking-wider
-                                text-neutral-500
+                                flex
+                                h-10
+                                w-10
+                                items-center
+                                justify-center
+                                rounded-xl
+                                bg-cyan-500/10
                             "
                         >
-                            Account Status
-                        </p>
 
-                        <h3
-                            className="
-                                mt-1
-                                text-xl
-                                font-bold
-                            "
-                        >
-                            {role}
-                        </h3>
+                            <Clock3
+                                size={18}
+                                className="text-cyan-400"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <p
+                                className="
+                                    text-[9px]
+                                    uppercase
+                                    tracking-[0.20em]
+                                    text-neutral-500
+                                "
+                            >
+                                Watchtime
+                            </p>
+
+                            <h2
+                                className="
+                                    mt-1
+                                    text-xl
+                                    font-bold
+                                    leading-none
+                                "
+                            >
+                                {hours}h {minutes}m
+                            </h2>
+
+                        </div>
 
                     </div>
 

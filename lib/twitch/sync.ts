@@ -1,211 +1,92 @@
-const TWITCH_API =
-    "https://api.twitch.tv/helix";
+import { createClient } from "@/lib/supabase/server";
 
+import {
+  getFollowerStatus,
+  getSubscribers,
+  getVIPs,
+  getModerators,
+} from "./api";
 
-const CLIENT_ID =
-    process.env.TWITCH_CLIENT_ID!;
+interface SyncTwitchProfileProps {
+  userId: string;
 
+  twitchId: string;
 
-
-
-async function twitchFetch(
-    endpoint:string,
-    token:string
-){
-
-    const response =
-        await fetch(
-            `${TWITCH_API}${endpoint}`,
-            {
-                headers:{
-                    "Authorization":
-                        `Bearer ${token}`,
-
-                    "Client-Id":
-                        CLIENT_ID,
-                }
-            }
-        );
-
-
-
-    if(!response.ok){
-
-        const error =
-            await response.text();
-
-
-        console.error(
-            "TWITCH API ERROR:",
-            response.status,
-            error
-        );
-
-
-        throw new Error(
-            `Twitch API error ${response.status}`
-        );
-
-    }
-
-
-
-    return response.json();
-
+  twitchToken: string;
 }
 
+export async function syncTwitchProfile({
+  userId,
 
+  twitchId,
 
+  twitchToken,
+}: SyncTwitchProfileProps) {
+  const supabase = await createClient();
 
+  const broadcasterId = process.env.TWITCH_BROADCASTER_ID!;
 
+  let follower = {
+    isFollower: false,
+    followedAt: null,
+  };
 
+  let subscribers: any[] = [];
 
-export interface TwitchSubscription {
+  let vips: any[] = [];
 
-    user_id:string;
+  let moderators: any[] = [];
 
-    tier:string;
+  try {
+    follower = await getFollowerStatus(twitchToken, broadcasterId, twitchId);
+  } catch (error) {
+    console.log("FOLLOW CHECK FAILED");
+  }
 
-}
+  try {
+    subscribers = await getSubscribers(twitchToken, broadcasterId);
+  } catch (error) {
+    console.log("SUB CHECK FAILED");
+  }
 
+  try {
+    vips = await getVIPs(twitchToken, broadcasterId);
+  } catch (error) {
+    console.log("VIP CHECK FAILED");
+  }
 
+  try {
+    moderators = await getModerators(twitchToken, broadcasterId);
+  } catch (error) {
+    console.log("MOD CHECK FAILED");
+  }
 
+  const subscription = subscribers.find((sub) => sub.user_id === twitchId);
 
+  const isVip = vips.some((vip) => vip.user_id === twitchId);
 
+  const isModerator = moderators.some((mod) => mod.user_id === twitchId);
 
-export interface TwitchModerator {
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      twitch_is_follower: follower.isFollower,
 
-    user_id:string;
+      twitch_following_since: follower.followedAt,
 
-}
+      twitch_is_subscriber: !!subscription,
 
+      twitch_subscription_tier: subscription?.tier ?? null,
 
+      twitch_is_vip: isVip,
 
+      twitch_is_moderator: isModerator,
+    })
+    .eq("id", userId);
 
+  if (error) {
+    throw error;
+  }
 
-
-export interface TwitchVIP {
-
-    user_id:string;
-
-}
-
-
-
-
-
-
-
-export async function getSubscribers(
-    token:string,
-    broadcasterId:string
-):Promise<TwitchSubscription[]> {
-
-
-    const data =
-        await twitchFetch(
-
-            `/subscriptions?broadcaster_id=${broadcasterId}`,
-
-            token
-
-        );
-
-
-
-    return data.data ?? [];
-
-}
-
-
-
-
-
-
-
-
-export async function getModerators(
-    token:string,
-    broadcasterId:string
-):Promise<TwitchModerator[]> {
-
-
-    const data =
-        await twitchFetch(
-
-            `/moderation/moderators?broadcaster_id=${broadcasterId}`,
-
-            token
-
-        );
-
-
-
-    return data.data ?? [];
-
-}
-
-
-
-
-
-
-
-
-export async function getVIPs(
-    token:string,
-    broadcasterId:string
-):Promise<TwitchVIP[]> {
-
-
-    const data =
-        await twitchFetch(
-
-            `/channels/vips?broadcaster_id=${broadcasterId}`,
-
-            token
-
-        );
-
-
-
-    return data.data ?? [];
-
-}
-
-
-
-
-
-
-
-
-export async function getFollowerStatus(
-
-    token:string,
-
-    broadcasterId:string,
-
-    userId:string
-
-):Promise<boolean>{
-
-
-
-    const data =
-        await twitchFetch(
-
-            `/channels/followers?broadcaster_id=${broadcasterId}&user_id=${userId}`,
-
-            token
-
-        );
-
-
-
-    return (
-        data.data &&
-        data.data.length > 0
-    );
-
+  console.log("TWITCH SYNC COMPLETE");
 }
