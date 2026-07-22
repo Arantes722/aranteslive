@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { addPoints } from "@/lib/points";
 import { addActivity } from "@/lib/activity";
+import { createNotification } from "@/lib/notifications";
 
 export async function redeemVoucher(code: string) {
 
@@ -73,6 +74,18 @@ export async function redeemVoucher(code: string) {
         description: `Redeemed voucher ${code}`,
 
         points: voucher.points,
+
+    });
+
+    await createNotification({
+
+        userId: user.id,
+
+        type: "voucher",
+
+        title: "Voucher Redeemed",
+
+        description: `+${voucher.points} Store Points`,
 
     });
 
